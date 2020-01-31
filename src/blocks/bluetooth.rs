@@ -4,7 +4,7 @@ use std::time::{Duration, Instant};
 
 use crossbeam_channel::Sender;
 use dbus;
-use dbus::stdintf::org_freedesktop_dbus::{ObjectManager, Properties};
+use dbus::ffidisp::stdintf::org_freedesktop_dbus::{ObjectManager, Properties};
 use uuid::Uuid;
 
 use crate::blocks::{Block, ConfigBlock};
@@ -19,12 +19,12 @@ pub struct BluetoothDevice {
     pub path: String,
     pub icon: Option<String>,
     pub label: String,
-    con: dbus::Connection,
+    con: dbus::ffidisp::Connection,
 }
 
 impl BluetoothDevice {
     pub fn new(mac: String, label: Option<String>) -> Result<Self> {
-        let con = dbus::Connection::get_private(dbus::BusType::System)
+        let con = dbus::ffidisp::Connection::get_private(dbus::ffidisp::BusType::System)
             .block_error("bluetooth", "Failed to establish D-Bus connection.")?;
 
         // Bluez does not provide a convenient way to, say, list devices, so we
@@ -120,7 +120,7 @@ impl BluetoothDevice {
     pub fn monitor(&self, id: String, update_request: Sender<Task>) {
         let path = self.path.clone();
         thread::spawn(move || {
-            let con = dbus::Connection::get_private(dbus::BusType::System)
+            let con = dbus::ffidisp::Connection::get_private(dbus::ffidisp::BusType::System)
                 .expect("Failed to establish D-Bus connection.");
             let rule = format!(
                 "type='signal',\
